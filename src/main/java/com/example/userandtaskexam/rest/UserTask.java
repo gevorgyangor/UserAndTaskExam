@@ -1,11 +1,13 @@
 package com.example.userandtaskexam.rest;
 
+import com.example.userandtaskexam.dto.UserDto;
 import com.example.userandtaskexam.model.User;
 import com.example.userandtaskexam.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedList;
 import java.util.List;
 
 @RestController
@@ -21,8 +23,11 @@ public class UserTask {
     }
 
     @GetMapping("/{id}")
-    public User getUser(@PathVariable int id) {
-        return userRepository.findOne(id);
+    public List<UserDto> getUser(@PathVariable int id) {
+        List<User> all = userRepository.findAll();
+        List<UserDto> userDtos = new LinkedList<>();
+        all.forEach(e -> userDtos.add(new UserDto(e.getId(), e.getName(), e.getSurname(), e.getAge(), e.getEmail())));
+        return userDtos;
     }
 
     @PostMapping

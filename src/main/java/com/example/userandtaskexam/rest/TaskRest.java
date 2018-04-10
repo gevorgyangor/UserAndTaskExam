@@ -6,6 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 @RestController
@@ -27,7 +29,13 @@ public class TaskRest {
 
     @GetMapping("/{date}")
     public List<Task> startDate(@PathVariable String date) {
-        List<Task> tasks = taskRepository.findTasksByStartData(date);
+        SimpleDateFormat myFormat = new SimpleDateFormat("yyyy-MM-dd");
+        List<Task> tasks = null;
+        try {
+            tasks = taskRepository.findAllByStartData(myFormat.parse(date));
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
         if (tasks == null) {
             ResponseEntity.badRequest().body("Tasks with " + date + " does not exist");
         }
@@ -36,7 +44,7 @@ public class TaskRest {
 
     @GetMapping("/{userId}")
     private List<Task> getTasksByUserId(@PathVariable int userId) {
-        List<Task> tasks = taskRepository.findTasksByUser_id(userId);
+        List<Task> tasks = taskRepository.findAllByUserId(userId);
         if (tasks == null) {
             ResponseEntity.badRequest().body("Tasks with " + userId + " does not exist");
         }

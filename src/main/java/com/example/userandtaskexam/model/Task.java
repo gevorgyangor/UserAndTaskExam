@@ -26,9 +26,8 @@ public class Task {
     @Column
     private String description;
     @Column
-    private Date startData;
+    private String startData;
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "user_id")
-    @JsonIgnore
-    private User user_id;
+    private User user;
+
 }
