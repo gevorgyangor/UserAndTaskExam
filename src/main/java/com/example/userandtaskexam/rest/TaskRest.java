@@ -14,6 +14,8 @@ import java.util.List;
 @RequestMapping(value = "/tasks")
 public class TaskRest {
 
+    SimpleDateFormat myFormat = new SimpleDateFormat("yyyy-MM-dd");
+
     @Autowired
     private TaskRepository taskRepository;
 
@@ -29,7 +31,7 @@ public class TaskRest {
 
     @GetMapping("/{date}")
     public List<Task> startDate(@PathVariable String date) {
-        SimpleDateFormat myFormat = new SimpleDateFormat("yyyy-MM-dd");
+
         List<Task> tasks = null;
         try {
             tasks = taskRepository.findAllByStartData(myFormat.parse(date));
@@ -40,6 +42,20 @@ public class TaskRest {
             ResponseEntity.badRequest().body("Tasks with " + date + " does not exist");
         }
         return tasks;
+    }
+
+    @PostMapping
+    public ResponseEntity createUser(@RequestBody Task task) {
+        if (taskRepository.exists(task.getId())) {
+            try {
+                task.setStartData(String.valueOf(myFormat.parse(task.getStartData())));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            taskRepository.save(task);
+            return ResponseEntity.ok("Created Task");
+        }
+        return ResponseEntity.badRequest().body("Task with " + task.getId() + " already exist");
     }
 
     @GetMapping("/{userId}")
